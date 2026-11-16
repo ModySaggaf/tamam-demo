@@ -144,12 +144,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if gh release view v1.0.0 -R "${{ github.repository }}" >/dev/null 2>&1; then
             gh release upload v1.0.0 Tamam-unsigned.ipa Tamam.apk Tamam.mobileconfig manifest.plist --clobber -R "${{ github.repository }}"
           else
             gh release create v1.0.0 Tamam-unsigned.ipa Tamam.apk Tamam.mobileconfig manifest.plist \
+              --target "${{ github.sha }}" \
               --title "Tamam تمام v1.0.0 — Site Engineer App (iOS & Android)" \
               --notes "Pre-production build of Tamam (تمام) Site Engineer Field Accounting App for iOS (.mobileconfig & unsigned .ipa) and Android (.apk)." \
               --latest \
