@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tamam تمام — Site accounting for Saudi contractors</title>
+<meta name="description" content="Tamam: receipts, cash payments, site videos and live project money for Saudi construction companies.">
+<style>
+:root{
+  --bg:#F4F1EA; --surface:#FFFFFF; --ink:#0F2219; --muted:#76837C; --line:#E7E3D9;
+  --g9:#0A3A2D; --g7:#0E5B47; --g5:#1C8A6B; --g1:#E3F2EC;
+  --amber:#E9A23B; --amber-bg:#FFF3DD; --red:#D2453F; --red-bg:#FCE9E7; --blue:#2F6FDE; --blue-bg:#E6EEFC;
+  --r:18px; --shadow:0 1px 2px rgba(15,34,25,.05),0 8px 24px -12px rgba(15,34,25,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:"IBM Plex Sans Arabic","Noto Sans Arabic","Segoe UI",system-ui,-apple-system,Tahoma,sans-serif;background:radial-gradient(1200px 600px at 50% -10%,#fff 0%,var(--bg) 60%);color:var(--ink);min-height:100vh;font-size:14px}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
+
+/* ---------- demo shell ---------- */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:14px 24px;max-width:1000px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em}
+.logo i{width:34px;height:34px;border-radius:11px;background:var(--g9);display:grid;place-items:center;color:var(--amber)}
+.logo small{display:block;font-weight:500;font-size:11px;color:var(--muted);letter-spacing:0}
+.seg{display:inline-flex;background:#E9E5DA;border-radius:12px;padding:3px;gap:2px}
+.seg button{padding:7px 14px;border-radius:9px;font-weight:600;font-size:13px;color:#5B665F}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.stage{display:flex;justify-content:center;gap:40px;padding:8px 16px 48px;flex-wrap:wrap}
+.cap{text-align:center;font-size:12px;color:var(--muted);margin-bottom:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+
+/* ---------- phone ---------- */
+.phone{width:372px;height:780px;border-radius:50px;background:#0b0f0d;padding:9px;box-shadow:0 30px 60px -25px rgba(15,34,25,.55),0 0 0 1.5px #2a3330 inset;position:relative;flex:none}
+.screen{position:relative;width:100%;height:100%;border-radius:42px;background:var(--bg);overflow:hidden;display:flex;flex-direction:column}
+.sb{height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 26px 0;font-size:13px;font-weight:700;position:relative;z-index:35}
+.sb.dark{color:#fff}
+.notch{position:absolute;left:50%;top:8px;width:96px;height:26px;border-radius:20px;background:#000;transform:translateX(-50%)}
+.sb .r{display:flex;gap:5px;align-items:center}
+.body{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 18px 110px;scrollbar-width:none}
+.body::-webkit-scrollbar{display:none}
+.hi{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:120px;height:4px;border-radius:4px;background:rgba(15,34,25,.35);z-index:30}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+[dir=rtl] .flip{transform:scaleX(-1)}
+
+/* ---------- nav ---------- */
+.nav{position:absolute;left:0;right:0;bottom:0;height:84px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-around;padding:9px 6px 0;z-index:10}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:#93A099;position:relative;padding-top:2px}
+.nav button.on{color:var(--g7)}
+.nav button.on::before{content:"";position:absolute;top:-9px;width:22px;height:3px;border-radius:0 0 4px 4px;background:var(--g7)}
+.nav .fab{flex:none;width:58px;height:58px;border-radius:20px;margin-top:-22px;background:linear-gradient(145deg,var(--g5),var(--g9));color:#fff;display:grid;place-items:center;box-shadow:0 10px 22px -6px rgba(10,58,45,.6);transition:transform .15s}
+.nav .fab:active{transform:scale(.94)}
+.nav .fab::before{display:none}
+.badge{position:absolute;top:-3px;inset-inline-start:calc(50% + 6px);min-width:16px;height:16px;border-radius:9px;background:var(--red);color:#fff;font-size:10px;display:grid;place-items:center;padding:0 4px}
+
+/* ---------- atoms ---------- */
+.h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0 14px}
+.hello small{display:block;color:var(--muted);font-size:12px}
+.hello b{font-size:19px;letter-spacing:-.01em}
+.av{width:40px;height:40px;border-radius:14px;background:var(--g1);color:var(--g7);display:grid;place-items:center;font-weight:800;flex:none}
+.av.sm{width:34px;height:34px;border-radius:11px;font-size:13px}
+.ib{width:40px;height:40px;border-radius:14px;background:var(--surface);display:grid;place-items:center;box-shadow:var(--shadow);position:relative}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
+.hero{background:var(--g9);color:#fff;border-radius:24px;padding:18px;position:relative;overflow:hidden;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.07' stroke-width='1'%3E%3Crect x='11' y='11' width='22' height='22'/%3E%3Crect x='11' y='11' width='22' height='22' transform='rotate(45 22 22)'/%3E%3C/g%3E%3C/svg%3E"),linear-gradient(150deg,#0E5B47,#0A3A2D 70%)}
+.hero .lbl{font-size:12px;opacity:.75}
+.hero .big{font-size:32px;font-weight:800;letter-spacing:-.02em;margin:2px 0}
+.hero .sub{display:flex;gap:14px;font-size:12px;opacity:.85;margin-top:8px;flex-wrap:wrap}
+.sec{display:flex;justify-content:space-between;align-items:center;margin:22px 0 10px;font-weight:700;font-size:15px}
+.sec a{font-size:12px;color:var(--g7);font-weight:600;cursor:pointer}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .t span{font-size:12px;color:var(--muted)}
+.row .amt{font-weight:700;text-align:end;font-size:14px}
+.row .amt small{display:block;font-weight:500;font-size:11px;color:var(--muted)}
+.ico{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;flex:none}
+.ico.g{background:var(--g1);color:var(--g7)} .ico.a{background:var(--amber-bg);color:#B87414} .ico.r{background:var(--red-bg);color:var(--red)} .ico.b{background:var(--blue-bg);color:var(--blue)}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.pill.g{background:var(--g1);color:var(--g7)} .pill.a{background:var(--amber-bg);color:#A66A0E} .pill.r{background:var(--red-bg);color:var(--red)} .pill.b{background:var(--blue-bg);color:var(--blue)}
+.btn{height:46px;border-radius:14px;padding:0 20px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn.p{background:var(--g7);color:#fff;box-shadow:0 8px 18px -8px rgba(14,91,71,.7)}
+.btn.s{background:var(--g1);color:var(--g7)}
+.btn.o{background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.d{background:var(--red-bg);color:var(--red)}
+.btn.w{width:100%}
+.btn.sm{height:34px;border-radius:11px;padding:0 14px;font-size:13px}
+.btn.dis{opacity:.4;pointer-events:none}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:8px 14px;border-radius:12px;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);font-weight:600;font-size:13px}
+.chip.on{background:var(--g1);box-shadow:inset 0 0 0 1.5px var(--g5);color:var(--g7)}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.quick button{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);padding:14px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;font-weight:700;text-align:center;line-height:1.25}
+.bar{height:7px;border-radius:7px;background:#ECE8DD;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:7px;background:var(--g5)}
+.bar.a i{background:var(--amber)}
+.mut{color:var(--muted)} .sm-t{font-size:12px}
+.tabs{display:flex;gap:6px;margin:4px 0 14px}
+.tabs button{flex:1;padding:9px 6px;border-radius:12px;font-weight:700;font-size:13px;background:#ECE8DD;color:#5B665F}
+.tabs button.on{background:var(--g9);color:#fff}
+.banner{position:absolute;top:50px;inset-inline:14px;background:var(--ink);color:#fff;border-radius:16px;padding:12px 14px;display:flex;gap:10px;align-items:center;z-index:50;box-shadow:0 14px 30px -10px rgba(0,0,0,.5);animation:drop .35s cubic-bezier(.2,.9,.3,1.2)}
+.banner b{display:block;font-size:13px} .banner span{font-size:12px;opacity:.75}
+@keyframes drop{from{transform:translateY(-30px);opacity:0}to{transform:none;opacity:1}}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes scan{0%{top:12%}100%{top:84%}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- sheet & flow ---------- */
+.scrim{position:absolute;inset:0;background:rgba(10,20,15,.45);z-index:40;animation:fade .2s}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-radius:28px 28px 0 0;padding:10px 18px 30px;z-index:41;animation:up .3s cubic-bezier(.2,.8,.2,1);max-height:88%;overflow-y:auto}
+.sheet .grab{width:40px;height:4px;border-radius:4px;background:#CFCABC;margin:0 auto 14px}
+.sheet h3{font-size:18px;margin-bottom:12px;letter-spacing:-.01em}
+.flow{position:absolute;inset:0;background:var(--bg);z-index:30;display:flex;flex-direction:column;animation:up .3s cubic-bezier(.2,.8,.2,1)}
+.flow.dark{background:#0c1410;color:#fff}
+.fh{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 8px;gap:8px}
+.fh .ti{font-weight:700;font-size:16px}
+.fh .ib.d{background:rgba(255,255,255,.12);box-shadow:none;color:#fff}
+.dots{display:flex;gap:5px;justify-content:center;padding-bottom:10px}
+.dots i{width:22px;height:4px;border-radius:4px;background:#D9D4C6}.dots i.on{background:var(--g7)}
+.fb{flex:1;overflow-y:auto;padding:6px 20px 20px;scrollbar-width:none}
+.ff{padding:12px 20px 28px;background:linear-gradient(transparent,var(--bg) 30%)}
+
+/* camera */
+.cam{position:relative;flex:1;margin:0 14px;border-radius:26px;overflow:hidden;background:radial-gradient(circle at 50% 40%,#2b3a33,#0c1410 75%)}
+.cam .paper{position:absolute;left:50%;top:48%;width:62%;transform:translate(-50%,-50%) rotate(-3deg);background:#fbfaf6;border-radius:6px;padding:16px 14px;color:#444;font-size:9px;line-height:1.7;box-shadow:0 20px 40px rgba(0,0,0,.5)}
+.cam .paper hr{border:0;border-top:1px dashed #bbb;margin:6px 0}
+.cam .paper .ln{display:flex;justify-content:space-between}
+.cam .corner{position:absolute;width:34px;height:34px;border:3px solid var(--amber);opacity:.95}
+.cam .c1{top:16px;left:16px;border-right:0;border-bottom:0;border-radius:12px 0 0 0}
+.cam .c2{top:16px;right:16px;border-left:0;border-bottom:0;border-radius:0 12px 0 0}
+.cam .c3{bottom:16px;left:16px;border-right:0;border-top:0;border-radius:0 0 0 12px}
+.cam .c4{bottom:16px;right:16px;border-left:0;border-top:0;border-radius:0 0 12px 0}
+.cam .scanline{position:absolute;left:12%;right:12%;height:2px;background:var(--amber);box-shadow:0 0 18px 4px rgba(233,162,59,.7);animation:scan 1.1s ease-in-out infinite alternate}
+.cam .hint{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:12px;opacity:.85}
+.shutter{width:72px;height:72px;border-radius:50%;border:4px solid #fff;display:grid;place-items:center;margin:0 auto}
+.shutter i{width:54px;height:54px;border-radius:50%;background:#fff;transition:transform .15s}
+.shutter:active i{transform:scale(.88)}
+.shutter.rec i{background:var(--red);border-radius:14px;width:30px;height:30px}
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:var(--amber);animation:spin .8s linear infinite}
+
+/* keypad */
+.amount{text-align:center;padding:18px 0 8px}
+.amount .v{font-size:46px;font-weight:800;letter-spacing:-.03em}
+.amount .v small{font-size:16px;font-weight:600;color:var(--muted);margin-inline-start:6px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.pad button{height:54px;border-radius:16px;background:var(--surface);box-shadow:var(--shadow);font-size:22px;font-weight:600}
+.pad button:active{background:var(--g1)}
+
+/* misc */
+.sigbox{background:#fff;border-radius:20px;box-shadow:inset 0 0 0 1.5px var(--line);position:relative;height:190px}
+.sigbox canvas{width:100%;height:100%;touch-action:none;border-radius:20px}
+.sigbox .ph{position:absolute;inset:0;display:grid;place-items:center;color:#B9B4A6;pointer-events:none;font-size:13px}
+.sigbox .base{position:absolute;left:24px;right:24px;bottom:44px;border-top:1.5px dashed #D9D4C6;pointer-events:none}
+.voucher{background:var(--g9);color:#fff;border-radius:22px;padding:18px;position:relative;overflow:hidden;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23E9A23B' stroke-opacity='.12'%3E%3Crect x='11' y='11' width='22' height='22'/%3E%3Crect x='11' y='11' width='22' height='22' transform='rotate(45 22 22)'/%3E%3C/g%3E%3C/svg%3E")}
+.voucher .no{font-size:11px;color:var(--amber);letter-spacing:.08em;font-weight:700}
+.voucher .tq{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(255,255,255,.25);font-size:15px;line-height:1.6;font-weight:600}
+.okc{width:76px;height:76px;border-radius:50%;background:var(--g1);color:var(--g7);display:grid;place-items:center;margin:20px auto 14px;animation:pop .5s}
+.kv{display:flex;justify-content:space-between;padding:9px 0;font-size:13px;border-bottom:1px solid var(--line)}.kv:last-child{border:0}.kv span:first-child{color:var(--muted)}
+.rec-dot{width:9px;height:9px;border-radius:50%;background:var(--red);animation:pulse 1s infinite;display:inline-block}
+.sw{width:46px;height:28px;border-radius:20px;background:#CFCABC;position:relative;transition:.2s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:.2s}
+.sw.on{background:var(--g5)}.sw.on::after{inset-inline-start:21px}
+.ba{position:relative;height:170px;border-radius:18px;overflow:hidden;--p:50%}
+.ba svg{position:absolute;inset:0;width:100%;height:100%}
+.ba .after{clip-path:inset(0 0 0 var(--p))}
+[dir=rtl] .ba .after{clip-path:inset(0 var(--p) 0 0)}
+.ba .knob{position:absolute;top:0;bottom:0;left:var(--p);width:3px;background:#fff;transform:translateX(-50%);box-shadow:0 0 8px rgba(0,0,0,.4)}
+[dir=rtl] .ba .knob{left:auto;right:var(--p);transform:translateX(50%)}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize}
+.ba .tag{position:absolute;top:10px;padding:3px 9px;border-radius:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700}
+.vcard{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.vth{width:84px;height:84px;border-radius:14px;flex:none;position:relative;overflow:hidden;background:linear-gradient(135deg,#335046,#0f1d17);display:grid;place-items:center;color:#fff}
+.vth em{position:absolute;bottom:5px;inset-inline-end:6px;font-style:normal;font-size:10px;background:rgba(0,0,0,.55);padding:1px 5px;border-radius:5px}
+.ans{background:var(--g1);border-radius:16px;padding:14px;line-height:1.6;font-size:13.5px;margin-top:12px;animation:fade .3s}
+.ledger-z{font-size:10px}
+.emp{text-align:center;color:var(--muted);padding:26px 10px;font-size:13px}
+.card3d{border-radius:22px;padding:18px;color:#fff;height:176px;position:relative;overflow:hidden;background:linear-gradient(135deg,#1c1c1c,#3a3326 60%,#E9A23B 160%);box-shadow:0 18px 30px -14px rgba(0,0,0,.5)}
+.card3d.frozen{filter:grayscale(1) brightness(.8)}
+.card3d .chipx{width:36px;height:26px;border-radius:6px;background:linear-gradient(135deg,#f3d58b,#c99a3b);margin:18px 0 12px}
+.card3d .pan{font-size:17px;letter-spacing:.14em;font-weight:600;direction:ltr;text-align:start}
+@media(max-width:420px){.phone{transform:scale(.9);transform-origin:top center;margin-bottom:-70px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo"><i><svg class="ic" viewBox="0 0 24 24" style="width:20px;height:20px"><path d="M20 6L9 17l-5-5"/></svg></i><div>Tamam <span style="font-weight:600">تمام</span><small>Every riyal. Every brick. · كل ريال، كل لبنة</small></div></div>
+  <div class="seg" id="views">
+    <button data-v="site">Site crew</button><button data-v="both" class="on">Side by side</button><button data-v="owner">Owner</button>
+  </div>
+</header>
+<main class="stage" id="stage"></main>
+
+<script>
+/* =============================== i18n =============================== */
+const D={
+en:{
+brand:"Tamam",gm:"Good morning",wName:"Khaled",oName:"Abdullah",
+t_home:"Home",t_act:"Activity",t_wallet:"Wallet",t_me:"Me",t_over:"Overview",t_proj:"Projects",t_appr:"Approvals",t_money:"Money",
+cash_hand:"Cash in your hand",spent_today:"Spent today",req_topup:"Ask for top-up",sent:"Request sent",
+q_receipt:"Scan receipt",q_labor:"Pay a worker",q_video:"Site video",
+s_receipt:"Snap it, we read it",s_labor:"Cash payment with signature",s_video:"Walk the site, we write the report",
+add_title:"What would you like to add?",today:"Today",see_all:"See all",
+streak:"Daily site video",streak_s:"Record one short walk-through every day",record_now:"Record",
+stage_exc:"Excavation",stage_fnd:"Foundation",stage_fin:"Finishing",stage_gen:"General",
+cam_hint:"Hold steady. Fit the whole receipt in the frame.",reading:"Reading your receipt…",reading_s:"Checking tax QR and duplicates",
+merchant:"Merchant",total:"Total",vat:"VAT 15%",no_vat:"No VAT number found",zatca_ok:"ZATCA verified",stage:"Stage",pay_by:"Paid by",p_cash:"Cash",p_card:"Card",
+over_limit:"Over 500 SAR — your manager will approve it first.",auto_ok:"Under 500 SAR — approved automatically.",
+submit:"Submit",done:"Done",saved:"Saved",voucher:"Voucher",sent_mgr:"Sent to your manager",recorded:"Recorded in the books",
+pick_worker:"Who did you pay?",enter_amount:"How much?",sign_here:"Worker signs here",sign_hint:"Sign with your finger",clear:"Clear",
+next:"Next",issue:"Issue voucher",job:"Work done",paid_to:"Paid to",amount:"Amount",share:"Share voucher",back_home:"Back to home",
+tr_plumber:"Plumber",tr_painter:"Painter",tr_electrician:"Electrician",tr_mason:"Mason",
+j_plumber:"Bathroom plumbing — Villa 2",j_painter:"Wall putty and primer — Villa 2",j_electrician:"Ceiling cables — Villa 1",j_mason:"Block work — Villa 3",
+rec_hint:"Walk slowly. Show what was done today.",rec_tap:"Tap to start",rec_stop:"Tap to stop",analyzing:"Tamam is watching your video…",analyzing_s:"Finding stage, materials and safety",
+ai_report:"Site report",detected:"Detected stage",progress:"Progress",materials:"Materials seen",safety:"Safety",all_safe:"Everyone wearing helmets and boots",post_report:"Post report",
+ai_sum:"Roof slab of Villa 3: rebar fixed and concrete pouring in progress. Two mixer trucks on site.",
+mat_list:"2 mixer trucks · 16mm rebar · pump",
+act_empty:"Nothing yet today",st_ok:"Approved",st_pend:"Waiting",st_done:"Posted",
+my_activity:"My activity",wallet_t:"My wallet",in_:"Top-up",out_:"Spent",
+// owner
+owner_sum:"Spent this month",budget:"Budget",of:"of",last7:"Last 7 days",
+needs_you:"Needs you",digest_t:"Today in 20 seconds",digest_open:"Open full summary",
+dg1:"You spent {s} SAR today across 3 projects.",dg2:"Al Narjis Villas moved +{p}% this week — ahead of plan.",dg3:"1 safety alert and {n} items need your decision.",
+ask:"Ask Tamam",ask_ph:"Ask anything about your projects",
+qa1:"Steel spend this month?",qa2:"Which project is behind?",qa3:"Cash with engineers?",
+an1:"Steel: 31,050 SAR in 2 invoices this month, all matched to site videos except 1 delivery that shows about 8 tons against 12 billed.",
+an2:"Sedra Towers is 6% behind plan. Main reason: finishing crew arrived 9 days late.",
+an3:"Engineers hold {c} SAR in cash. Khaled has the most.",
+approve:"Approve",decline:"Decline",assign:"Assign fix",dismiss:"Dismiss",release:"Release payment",
+ty_exp:"Expense",ty_ms:"Milestone",ty_safe:"Safety",
+ap_empty:"All clear. Nothing waiting for you.",ap_empty_s:"New requests from your team show up here instantly.",
+ap_ms:"Al-Amal Electrical — 2nd fix complete",ap_ms_s:"Villa 1 · inspected by Khaled",
+ap_safe:"2 workers without helmets",ap_safe_s:"Villa 3 scaffold · found by Tamam in video",
+ap_exp:"Al-Rajhi Steel — 12 tons rebar",ap_exp_s:"Khaled · Foundation",
+p_budget:"Budget",p_spent:"Spent",p_left:"Left",p_stages:"Stages",p_ba:"Before & after",p_before:"Before",p_after:"After",p_map:"Site map",p_videos:"Latest site videos",p_ms:"Subcontractor payments",
+p_active:"In progress",p_done:"Done",p_wait:"Upcoming",v_title1:"Villa 3 roof slab pour",v_title2:"Villa 2 interior painting",
+hours_ago:"{h}h ago",yday:"Yesterday",
+engineers:"Engineers' cash",topup:"Top up",topup_t:"Top up cash",to:"To",confirm_topup:"Send money",topped:"Topped up",
+mc:"Cash",mcard:"Card",mledger:"Ledger",
+card_t:"Site card",freeze:"Freeze card",limit:"Daily limit",matched:"Last swipe matched to receipt",
+ledger_t:"Tax-ready ledger",export:"Export to Excel",exported:"Excel file ready",vat_in:"VAT you can reclaim",
+settings:"Settings",language:"Language",lang_en:"English",lang_ar:"العربية",notif:"Notifications",offline:"Work offline",offline_s:"Save now, sync when signal returns",
+help:"Help & support",logout:"Sign out",role_w:"Site engineer",role_o:"Company owner",version:"Tamam 1.0 · Riyadh",
+off_banner:"Offline — will sync later",synced:"Back online — synced",
+new_item:"New from Khaled",pdf:"Share PDF",
+sar:"SAR",
+},
+ar:{
+brand:"تمام",gm:"صباح الخير",wName:"خالد",oName:"عبدالله",
+t_home:"الرئيسية",t_act:"نشاطي",t_wallet:"العهدة",t_me:"حسابي",t_over:"نظرة عامة",t_proj:"المشاريع",t_appr:"الموافقات",t_money:"المالية",
+cash_hand:"المبلغ الذي معك",spent_today:"مصروف اليوم",req_topup:"اطلب تعبئة",sent:"تم إرسال الطلب",
+q_receipt:"مسح فاتورة",q_labor:"دفع لعامل",q_video:"فيديو الموقع",
+s_receipt:"صوّرها ونحن نقرأها",s_labor:"دفعة نقدية بتوقيع",s_video:"تجوّل في الموقع ونكتب التقرير",
+add_title:"ماذا تريد أن تضيف؟",today:"اليوم",see_all:"عرض الكل",
+streak:"فيديو الموقع اليومي",streak_s:"صوّر جولة قصيرة كل يوم",record_now:"سجّل",
+stage_exc:"الحفر",stage_fnd:"التأسيس",stage_fin:"التشطيب",stage_gen:"عام",
+cam_hint:"ثبّت الجوال وضع الفاتورة كاملة داخل الإطار",reading:"نقرأ فاتورتك…",reading_s:"نتحقق من الباركود الضريبي والتكرار",
+merchant:"المورد",total:"الإجمالي",vat:"ضريبة القيمة المضافة 15%",no_vat:"لا يوجد رقم ضريبي",zatca_ok:"موثّقة من هيئة الزكاة",stage:"المرحلة",pay_by:"طريقة الدفع",p_cash:"نقداً",p_card:"بطاقة",
+over_limit:"أكثر من 500 ريال — سيوافق عليها المدير أولاً",auto_ok:"أقل من 500 ريال — اعتماد تلقائي",
+submit:"إرسال",done:"تم",saved:"تم الحفظ",voucher:"السند",sent_mgr:"أُرسلت إلى مديرك",recorded:"سُجّلت في الدفاتر",
+pick_worker:"لمن دفعت؟",enter_amount:"كم المبلغ؟",sign_here:"توقيع العامل هنا",sign_hint:"وقّع بإصبعك",clear:"مسح",
+next:"التالي",issue:"إصدار السند",job:"العمل المنجز",paid_to:"المستلم",amount:"المبلغ",share:"مشاركة السند",back_home:"العودة للرئيسية",
+tr_plumber:"سبّاك",tr_painter:"نقّاش",tr_electrician:"كهربائي",tr_mason:"بنّاء",
+j_plumber:"سباكة الحمامات — فيلا 2",j_painter:"معجون وأساس للجدران — فيلا 2",j_electrician:"كابلات السقف — فيلا 1",j_mason:"أعمال البلوك — فيلا 3",
+rec_hint:"امشِ ببطء وأظهر ما أُنجز اليوم",rec_tap:"اضغط للبدء",rec_stop:"اضغط للإيقاف",analyzing:"تمام يشاهد الفيديو…",analyzing_s:"نحدد المرحلة والمواد والسلامة",
+ai_report:"تقرير الموقع",detected:"المرحلة المرصودة",progress:"التقدم",materials:"المواد المرصودة",safety:"السلامة",all_safe:"الجميع يرتدي الخوذ والأحذية",post_report:"نشر التقرير",
+ai_sum:"سقف الفيلا 3: تم تثبيت الحديد والصبّ جارٍ، وشاحنتا خلّاطة في الموقع.",
+mat_list:"شاحنتا خلّاطة · حديد 16 مم · مضخة",
+act_empty:"لا شيء اليوم بعد",st_ok:"معتمد",st_pend:"بالانتظار",st_done:"منشور",
+my_activity:"نشاطي",wallet_t:"محفظتي",in_:"تعبئة",out_:"مصروف",
+owner_sum:"المصروف هذا الشهر",budget:"الميزانية",of:"من",last7:"آخر 7 أيام",
+needs_you:"بانتظار قرارك",digest_t:"اليوم في 20 ثانية",digest_open:"افتح الملخص الكامل",
+dg1:"صرفت اليوم {s} ريال على 3 مشاريع.",dg2:"فلل النرجس تقدّمت +{p}% هذا الأسبوع — أسرع من الخطة.",dg3:"تنبيه سلامة واحد و{n} طلبات تحتاج قرارك.",
+ask:"اسأل تمام",ask_ph:"اسأل أي شيء عن مشاريعك",
+qa1:"مصروف الحديد هذا الشهر؟",qa2:"أي مشروع متأخر؟",qa3:"كم النقد مع المهندسين؟",
+an1:"الحديد: 31,050 ريال في فاتورتين هذا الشهر، وكلها مطابقة لفيديوهات الموقع عدا توريدة واحدة تظهر نحو 8 أطنان مقابل 12 مفوترة.",
+an2:"أبراج السدرة متأخرة 6% عن الخطة، والسبب الرئيسي وصول فريق التشطيب متأخراً 9 أيام.",
+an3:"المهندسون يحملون {c} ريال نقداً، وخالد لديه الأكثر.",
+approve:"اعتماد",decline:"رفض",assign:"تكليف بالمعالجة",dismiss:"تجاهل",release:"صرف الدفعة",
+ty_exp:"مصروف",ty_ms:"مرحلة",ty_safe:"سلامة",
+ap_empty:"كل شيء تمام. لا شيء بانتظارك.",ap_empty_s:"طلبات فريقك الجديدة تظهر هنا فوراً.",
+ap_ms:"الأمل للكهرباء — اكتمال التأسيس الثاني",ap_ms_s:"فيلا 1 · فحص المهندس خالد",
+ap_safe:"عاملان بدون خوذة",ap_safe_s:"سقالة فيلا 3 · رصدها تمام في الفيديو",
+ap_exp:"حديد الراجحي — 12 طن تسليح",ap_exp_s:"خالد · التأسيس",
+p_budget:"الميزانية",p_spent:"المصروف",p_left:"المتبقي",p_stages:"المراحل",p_ba:"قبل وبعد",p_before:"قبل",p_after:"بعد",p_map:"مخطط الموقع",p_videos:"أحدث فيديوهات الموقع",p_ms:"دفعات المقاولين",
+p_active:"جارية",p_done:"مكتملة",p_wait:"قادمة",v_title1:"صبّ سقف الفيلا 3",v_title2:"دهان داخلي للفيلا 2",
+hours_ago:"قبل {h} ساعة",yday:"أمس",
+engineers:"نقد المهندسين",topup:"تعبئة",topup_t:"تعبئة نقدية",to:"إلى",confirm_topup:"إرسال المبلغ",topped:"تمت التعبئة",
+mc:"نقد",mcard:"بطاقة",mledger:"السجل",
+card_t:"بطاقة الموقع",freeze:"تجميد البطاقة",limit:"الحد اليومي",matched:"آخر عملية ربطت بالفاتورة تلقائياً",
+ledger_t:"سجل جاهز للضريبة",export:"تصدير إلى إكسل",exported:"ملف إكسل جاهز",vat_in:"ضريبة يمكنك استردادها",
+settings:"الإعدادات",language:"اللغة",lang_en:"English",lang_ar:"العربية",notif:"الإشعارات",offline:"العمل بدون إنترنت",offline_s:"احفظ الآن وسنزامن عند عودة الشبكة",
+help:"المساعدة والدعم",logout:"تسجيل الخروج",role_w:"مهندس موقع",role_o:"مالك الشركة",version:"تمام 1.0 · الرياض",
+off_banner:"بدون إنترنت — ستتم المزامنة لاحقاً",synced:"عاد الاتصال — تمت المزامنة",
+new_item:"جديد من خالد",pdf:"مشاركة PDF",
+sar:"ر.س",
+}};
+let lang='en';
+const t=(k,v)=>{let s=(D[lang][k]??D.en[k]??k);if(v)for(const x in v)s=s.replace('{'+x+'}',v[x]);return s};
+const L=o=>typeof o==='string'?o:o[lang];
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const money=n=>`<span class="num">${fmt(n)}</span> ${t('sar')}`;
+
+/* ---- tafqeet ---- */
+function arWords(n){
+  const o=['','واحد','اثنان','ثلاثة','أربعة','خمسة','ستة','سبعة','ثمانية','تسعة'],
+        te=['عشرة','أحد عشر','اثنا عشر','ثلاثة عشر','أربعة عشر','خمسة عشر','ستة عشر','سبعة عشر','ثمانية عشر','تسعة عشر'],
+        tn=['','','عشرون','ثلاثون','أربعون','خمسون','ستون','سبعون','ثمانون','تسعون'],
+        h=['','مائة','مئتان','ثلاثمائة','أربعمائة','خمسمائة','ستمائة','سبعمائة','ثمانمائة','تسعمائة'];
+  const g=x=>{const p=[];const a=Math.floor(x/100),r=x%100;if(a)p.push(h[a]);
+    if(r){if(r<10)p.push(o[r]);else if(r<20)p.push(te[r-10]);else{const u=r%10,d=Math.floor(r/10);p.push(u?o[u]+' و'+tn[d]:tn[d])}}return p.join(' و')};
+  const th=Math.floor(n/1000),r=n%1000,parts=[];
+  if(th){parts.push(th===1?'ألف':th===2?'ألفان':th<=10?g(th)+' آلاف':g(th)+' ألف')}
+  if(r)parts.push(g(r));
+  return 'فقط '+parts.join(' و')+' ريال سعودي لا غير';
+}
+function enWords(n){
+  const a=['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'],
+        b=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+  const g=x=>{let s='';if(x>=100){s+=a[Math.floor(x/100)]+' hundred';x%=100;if(x)s+=' and '}
+    if(x<20)s+=a[x];else s+=b[Math.floor(x/10)]+(x%10?'-'+a[x%10]:'');return s};
+  const th=Math.floor(n/1000),r=n%1000;let s='';
+  if(th)s+=g(th)+' thousand'+(r?' ':'');if(r)s+=g(r);
+  s=s.charAt(0).toUpperCase()+s.slice(1);return 'Only '+s+' Saudi riyals';
+}
+const tafqeet=n=>lang==='ar'?arWords(n):enWords(n);
+
+/* =============================== icons =============================== */
+const P={home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',list:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',plus:'M12 5v14M5 12h14',
+wallet:'M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2zM16 14h.01',user:'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+camera:'M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+users:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8',
+video:'M23 7l-7 5 7 5zM1 5h15a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H1z',check:'M20 6L9 17l-5-5',x:'M18 6L6 18M6 6l12 12',chev:'M9 18l6-6-6-6',back:'M15 18l-6-6 6-6',
+bell:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',globe:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18',
+shield:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',map:'M1 6v16l7-4 8 4 7-4V2l-7 4-8-4zM8 2v16M16 6v16',
+card:'M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM1 10h22',file:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h8',
+spark:'M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z',
+alert:'M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01',send:'M22 2L11 13M22 2l-7 20-4-9-9-4z',
+wifi:'M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01',logout:'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9',trend:'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',
+building:'M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9h.01M9 13h.01M9 17h.01',lock:'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zM7 11V7a5 5 0 0 1 10 0v4',
+download:'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3',pin:'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+help:'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01',hammer:'M14 4l6 6-3 3-6-6zM11 7L3 15l3 3 8-8',
+coin:'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v12M15 9.5c-.5-1-1.600-1.500-3-1.500-1.700 0-3 .8-3 2s1.300 1.800 3 2 3 .8 3 2-1.300 2-3 2c-1.400 0-2.500-.5-3-1.500'};
+const I=(n,s)=>`<svg class="ic" viewBox="0 0 24 24"${s?` style="width:${s}px;height:${s}px"`:''}><path d="${P[n]}"/></svg>`;
+
+/* =============================== data/state =============================== */
+const STAGES={exc:'stage_exc',fnd:'stage_fnd',fin:'stage_fin',gen:'stage_gen'};
+const RECEIPTS=[
+ {m:{en:'Al-Fanar Electrical',ar:'الفنار للكهرباء'},total:483,vat:true,items:{en:'32A breakers, 4mm copper wire',ar:'قواطع 32 أمبير، سلك نحاس 4 ملم'},stage:'fnd'},
+ {m:{en:'Saudi Readymix',ar:'السعودية للخرسانة الجاهزة'},total:4600,vat:true,items:{en:'12 m³ concrete C35',ar:'12 م³ خرسانة C35'},stage:'fnd'},
+ {m:{en:'Madina Hardware',ar:'مؤسسة المدينة للأدوات'},total:320,vat:false,items:{en:'Pool cover hinges',ar:'مفصلات غطاء المسبح'},stage:'fin'}];
+const WORKERS=[
+ {id:'plumber',n:{en:'Ahmed',ar:'أحمد'},tr:'tr_plumber',j:'j_plumber',amt:350},
+ {id:'painter',n:{en:'Saeed',ar:'سعيد'},tr:'tr_painter',j:'j_painter',amt:480},
+ {id:'electrician',n:{en:'Salem',ar:'سالم'},tr:'tr_electrician',j:'j_electrician',amt:450},
+ {id:'mason',n:{en:'Mahmoud',ar:'محمود'},tr:'tr_mason',j:'j_mason',amt:600}];
+const PROJECTS=[
+ {id:'nar',n:{en:'Al Narjis Villas',ar:'فلل النرجس'},c:{en:'Riyadh · North',ar:'الرياض · الشمال'},p:64,b:1800000,s:1146200,pace:'+4%'},
+ {id:'sed',n:{en:'Sedra Towers',ar:'أبراج السدرة'},c:{en:'Jeddah · Obhur',ar:'جدة · أبحر'},p:38,b:4200000,s:1512000,pace:'-6%'},
+ {id:'wad',n:{en:'Wadi Resort',ar:'منتجع الوادي'},c:{en:'AlUla',ar:'العلا'},p:81,b:2600000,s:2077000,pace:'+1%'}];
+
+const S={
+  wallet:11350, spentToday:1200,
+  acts:[
+   {k:'labor',ti:{en:'Mahmoud · Mason',ar:'محمود · بنّاء'},amt:600,st:'ok',tm:'09:12'},
+   {k:'receipt',ti:{en:'Jotun Paints',ar:'جوتن للدهانات'},amt:600,st:'ok',tm:'08:40'}],
+  pend:[
+   {id:1,ty:'ms',ti:'ap_ms',sub:'ap_ms_s',amt:18000},
+   {id:2,ty:'safe',ti:'ap_safe',sub:'ap_safe_s',amt:0},
+   {id:3,ty:'exp',ti:'ap_exp',sub:'ap_exp_s',amt:31050}],
+  engineers:[{id:'k',n:{en:'Eng. Khaled',ar:'م. خالد'},bal:11350},{id:'s',n:{en:'Eng. Salem',ar:'م. سالم'},bal:7200},{id:'r',n:{en:'Eng. Reem',ar:'م. ريم'},bal:3980}],
+  ledger:[
+   {m:{en:'Saudi Readymix',ar:'السعودية للخرسانة'},a:9660,v:1260,z:1},{m:{en:'Jotun Paints',ar:'جوتن للدهانات'},a:8280,v:1080,z:1},
+   {m:{en:'Al-Rajhi Steel',ar:'حديد الراجحي'},a:31050,v:4050,z:1},{m:{en:'RAK Ceramics',ar:'سيراميك رأس الخيمة'},a:14490,v:1890,z:1},
+   {m:{en:'Cash labor voucher',ar:'سند عمالة نقدي'},a:2950,v:0,z:0}],
+  week:[38,52,44,70,61,82,48],
+  card:{frozen:false}, offline:false, queue:[], rcIdx:0, vno:9,
+  feed:[{ti:'v_title1',tm:{h:2},dur:'0:52',st:'fnd'},{ti:'v_title2',tm:'yday',dur:'1:14',st:'fin'}],
+  progressBoost:0
+};
+const PH={ w:{tab:'home',flow:null,sheet:null,banner:null}, o:{tab:'over',proj:null,sheet:null,banner:null,mtab:'cash',ask:null} };
+let VIEW='both';
+
+/* =============================== shell =============================== */
+function frame(id,inner,dark){
+  return `<div class="phone" data-p="${id}" dir="${lang==='ar'?'rtl':'ltr'}" lang="${lang}"><div class="screen">
+   <div class="sb ${dark?'dark':''}"><span class="num">9:41</span><div class="notch"></div><div class="r">${I('wifi',15)}<svg width="24" height="12" viewBox="0 0 24 12"><rect x=".5" y=".5" width="20" height="11" rx="3.5" fill="none" stroke="currentColor"/><rect x="2" y="2" width="14" height="8" rx="2" fill="currentColor"/><rect x="21.500" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></div></div>
+   ${inner}<div class="hi"></div></div></div>`;
+}
+function renderAll(){
+  const st=document.getElementById('stage');
+  const showW=VIEW!=='owner', showO=VIEW!=='site';
+  const cap=(a,b)=>`<div class="cap">${a} <span style="font-weight:500">· ${b}</span></div>`;
+  st.innerHTML=(showW?`<div>${cap('Site engineer','مهندس الموقع')}<div id="pw"></div></div>`:'')+(showO?`<div>${cap('Company owner','مالك الشركة')}<div id="po"></div></div>`:'');
+  if(showW)render('w'); if(showO)render('o');
+  document.querySelectorAll('#views button').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));
+}
+function render(p){
+  const host=document.getElementById(p==='w'?'pw':'po'); if(!host)return;
+  const body=host.querySelector('.body'); const sc=body?body.scrollTop:0;
+  const html=p==='w'?workerUI():ownerUI();
+  const prevFlow=host.querySelector('.flow'); 
+  host.innerHTML=html;
+  const nb=host.querySelector('.body'); if(nb&&!PH[p].resetScroll)nb.scrollTop=sc; PH[p].resetScroll=false;
+  afterRender(p,host);
+}
+function banner(p,icon,a,b){
+  PH[p].banner={icon,a,b}; render(p); clearTimeout(PH[p].bt);
+  PH[p].bt=setTimeout(()=>{PH[p].banner=null;render(p)},3200);
+}
+const bannerHTML=p=>PH[p].banner?`<div class="banner"><div class="ico g" style="background:rgba(255,255,255,.14);color:#fff">${I(PH[p].banner.icon)}</div><div><b>${PH[p].banner.a}</b><span>${PH[p].banner.b||''}</span></div></div>`:'';
+const avatar=(s,c)=>`<div class="av sm" ${c?`style="${c}"`:''}>${s}</div>`;
+const initial=o=>Array.from(L(o).replace(/^(Eng\.|م\.)\s*/,''))[0];
+const stageName=k=>t(STAGES[k]);
+
+/* =============================== WORKER =============================== */
+function workerUI(){
+  const w=PH.w; let main='';
+  const nav=`<nav class="nav">
+   ${nb('w','home','home','t_home')}${nb('w','act','list','t_act')}
+   <button class="fab" data-a="wsheet" aria-label="add">${I('plus',26)}</button>
+   ${nb('w','wallet','wallet','t_wallet')}${nb('w','me','user','t_me')}</nav>`;
+  if(w.tab==='home')main=wHome(); else if(w.tab==='act')main=wAct(); else if(w.tab==='wallet')main=wWallet(); else main=meScreen('w');
+  const sheet=w.sheet==='add'?`<div class="scrim" data-a="wclose"></div><div class="sheet"><div class="grab"></div><h3>${t('add_title')}</h3>
+    ${addRow('receipt','camera','g','q_receipt','s_receipt')}${addRow('labor','users','a','q_labor','s_labor')}${addRow('video','video','b','q_video','s_video')}</div>`:'';
+  if(w.flow)return frame('w',`${bannerHTML('w')}${flowUI()}`,w.flow.dark);
+  return frame('w',`${bannerHTML('w')}<div class="body">${main}</div>${nav}${sheet}`);
+}
+const nb=(p,tab,ic,lbl,badge)=>`<button class="${PH[p].tab===tab?'on':''}" data-a="tab" data-p="${p}" data-tab="${tab}">${I(ic)}<span>${t(lbl)}</span>${badge?`<i class="badge">${badge}</i>`:''}</button>`;
+const addRow=(f,ic,c,a,b)=>`<button class="row" style="width:100%;text-align:start" data-a="wflow" data-f="${f}"><div class="ico ${c}">${I(ic)}</div><div class="t"><b>${t(a)}</b><span>${t(b)}</span></div><span class="mut flip">${I('chev')}</span></button>`;
+function actRow(a){
+  const ic=a.k==='receipt'?['camera','g']:a.k==='labor'?['users','a']:['video','b'];
+  const pill=a.st==='ok'?`<span class="pill g">${I('check',11)} ${t('st_ok')}</span>`:a.st==='pend'?`<span class="pill a">${t('st_pend')}</span>`:`<span class="pill b">${t('st_done')}</span>`;
+  return `<div class="row"><div class="ico ${ic[1]}">${I(ic[0])}</div><div class="t"><b>${L(a.ti)}</b><span class="num">${a.tm}</span> ${pill}</div>${a.amt?`<div class="amt">${money(a.amt)}</div>`:''}</div>`;
+}
+function wHome(){
+  const acts=S.acts.slice(0,4).map(actRow).join('')||`<div class="emp">${t('act_empty')}</div>`;
+  return `<div class="h"><div style="display:flex;gap:12px;align-items:center"><div class="av">${initial(t('wName'))}</div><div class="hello"><small>${t('gm')}</small><b>${t('wName')}</b></div></div>
+    <button class="ib" data-a="tab" data-p="w" data-tab="me">${I('bell')}</button></div>
+   <div class="hero"><div class="lbl">${t('cash_hand')}</div><div class="big">${money(S.wallet)}</div>
+     <div class="sub"><span>${t('spent_today')}: <b>${money(S.spentToday)}</b></span></div>
+     <button class="btn sm" style="background:rgba(255,255,255,.14);color:#fff;margin-top:14px" data-a="reqtop">${I('send',15)} ${t('req_topup')}</button></div>
+   <div class="sec"><span>${t('add_title')}</span></div>
+   <div class="quick">
+    <button data-a="wflow" data-f="receipt"><div class="ico g">${I('camera',22)}</div>${t('q_receipt')}</button>
+    <button data-a="wflow" data-f="labor"><div class="ico a">${I('users',22)}</div>${t('q_labor')}</button>
+    <button data-a="wflow" data-f="video"><div class="ico b">${I('video',22)}</div>${t('q_video')}</button></div>
+   <div class="sec"><span>${t('today')}</span><a data-a="tab" data-p="w" data-tab="act">${t('see_all')}</a></div>
+   <div class="card" style="padding:4px 16px">${acts}</div>
+   <div class="card" style="margin-top:14px;display:flex;gap:12px;align-items:center"><div class="ico b">${I('video',20)}</div><div style="flex:1"><b>${t('streak')}</b><div class="mut sm-t">${t('streak_s')}</div></div><button class="btn s sm" data-a="wflow" data-f="video">${t('record_now')}</button></div>`;
+}
+function wAct(){return `<div class="h"><div class="hello"><b style="font-size:24px">${t('my_activity')}</b></div></div><div class="card" style="padding:4px 16px">${S.acts.map(actRow).join('')||`<div class="emp">${t('act_empty')}</div>`}</div>`}
+function wWallet(){
+  const tx=S.acts.filter(a=>a.amt).map(a=>`<div class="row"><div class="ico r">${I('trend',18)}</div><div class="t"><b>${L(a.ti)}</b><span class="num">${a.tm}</span></div><div class="amt" style="color:var(--red)">−<span class="num">${fmt(a.amt)}</span></div></div>`).join('');
+  return `<div class="h"><b style="font-size:24px">${t('wallet_t')}</b></div>
+   <div class="hero"><div class="lbl">${t('cash_hand')}</div><div class="big">${money(S.wallet)}</div></div>
+   <div class="sec"><span>${t('my_activity')}</span></div><div class="card" style="padding:4px 16px">
+   <div class="row"><div class="ico g">${I('plus',18)}</div><div class="t"><b>${t('in_')}</b><span>Alinma · <span class="num">08:05</span></span></div><div class="amt" style="color:var(--g7)">+<span class="num">5,000</span></div></div>${tx}</div>`;
+}
+
+/* ---- worker flows ---- */
+function flowUI(){
+  const f=PH.w.flow;
+  if(f.type==='receipt')return fReceipt(f); if(f.type==='labor')return fLabor(f); return fVideo(f);
+}
+const fhead=(title,f,steps)=>`<div class="sb-gap"></div><div class="fh"><button class="ib ${f.dark?'d':''}" data-a="fclose">${I('x')}</button><span class="ti">${title}</span><span style="width:40px"></span></div>${steps?`<div class="dots">${Array.from({length:steps},(_,i)=>`<i class="${i<=f.step?'on':''}"></i>`).join('')}</div>`:''}`;
+function fReceipt(f){
+  const r=RECEIPTS[f.idx];
+  if(f.step===0)return `<div class="flow dark" style="padding-top:44px">${fhead(t('q_receipt'),f)}
+   <div class="cam"><div class="paper"><b style="font-size:11px">${L(r.m)}</b><div>Riyadh · VAT No 3001••••••003</div><hr>
+     <div class="ln"><span>Item 1</span><span>120.00</span></div><div class="ln"><span>Item 2</span><span>212.50</span></div><div class="ln"><span>Item 3</span><span>87.00</span></div><hr><div class="ln"><b>TOTAL</b><b>${r.total}.00</b></div>
+     <div style="width:46px;height:46px;margin:8px auto 0;background:repeating-conic-gradient(#222 0 25%,#fff 0 50%) 0 0/8px 8px"></div></div>
+     <i class="corner c1"></i><i class="corner c2"></i><i class="corner c3"></i><i class="corner c4"></i><div class="hint">${t('cam_hint')}</div></div>
+   <div style="padding:18px 0 34px"><button class="shutter" data-a="shoot" aria-label="capture"><i></i></button></div></div>`;
+  if(f.step===1)return `<div class="flow dark" style="padding-top:44px">${fhead(t('q_receipt'),f)}<div class="cam" style="display:grid;place-items:center"><div class="paper" style="opacity:.55"><b>${L(r.m)}</b><hr><div class="ln"><b>TOTAL</b><b>${r.total}.00</b></div></div><div class="scanline"></div>
+     <div style="position:relative;text-align:center;background:rgba(10,20,15,.8);padding:18px 22px;border-radius:18px"><div class="spin" style="margin:0 auto 12px"></div><b>${t('reading')}</b><div style="font-size:12px;opacity:.7;margin-top:4px">${t('reading_s')}</div></div></div><div style="height:100px"></div></div>`;
+  if(f.step===2){
+    const vat=r.vat?r.total-r.total/1.15:0, over=r.total>500;
+    return `<div class="flow" style="padding-top:44px">${fhead(t('q_receipt'),f,3)}<div class="fb">
+     <div class="card"><div class="mut sm-t">${t('merchant')}</div><b style="font-size:17px">${L(r.m)}</b><div class="mut sm-t" style="margin-top:2px">${L(r.items)}</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:14px"><div><div class="mut sm-t">${t('total')}</div><div style="font-size:30px;font-weight:800;letter-spacing:-.02em">${money(r.total)}</div></div>
+      ${r.vat?`<span class="pill g">${I('shield',12)} ${t('zatca_ok')}</span>`:`<span class="pill a">${t('no_vat')}</span>`}</div>
+      <div class="kv" style="margin-top:12px"><span>${t('vat')}</span><b>${money(vat)}</b></div></div>
+     <div class="sec" style="margin:18px 0 8px"><span>${t('stage')}</span></div>
+     <div class="chips">${Object.keys(STAGES).map(k=>`<button class="chip ${f.stage===k?'on':''}" data-a="fset" data-k="stage" data-v="${k}">${stageName(k)}</button>`).join('')}</div>
+     <div class="sec" style="margin:18px 0 8px"><span>${t('pay_by')}</span></div>
+     <div class="chips"><button class="chip ${f.pay==='cash'?'on':''}" data-a="fset" data-k="pay" data-v="cash">${t('p_cash')}</button><button class="chip ${f.pay==='card'?'on':''}" data-a="fset" data-k="pay" data-v="card">${t('p_card')}</button></div>
+     <div class="pill ${over?'a':'g'}" style="margin-top:16px;padding:9px 12px;border-radius:12px;font-size:12.5px;white-space:normal">${over?I('clock',14):I('check',14)} ${over?t('over_limit'):t('auto_ok')}</div></div>
+     <div class="ff"><button class="btn p w" data-a="subRcpt">${t('submit')}</button></div></div>`;
+  }
+  const over=r.total>500;
+  return `<div class="flow" style="padding-top:44px"><div class="fb" style="text-align:center"><div class="okc">${I('check',38)}</div><h2 style="font-size:22px">${t('saved')}</h2>
+    <p class="mut" style="margin:6px 0 18px">${over?t('sent_mgr'):t('recorded')}</p>
+    <div class="card" style="text-align:start"><div class="kv"><span>${t('voucher')}</span><b class="num">CHA-2611-00${f.no}</b></div><div class="kv"><span>${t('merchant')}</span><b>${L(r.m)}</b></div><div class="kv"><span>${t('total')}</span><b>${money(r.total)}</b></div><div class="kv"><span>${t('stage')}</span><b>${stageName(f.stage)}</b></div></div></div>
+    <div class="ff"><button class="btn p w" data-a="fclose">${t('back_home')}</button></div></div>`;
+}
+function fLabor(f){
+  const w=WORKERS.find(x=>x.id===f.worker);
+  if(f.step===0)return `<div class="flow" style="padding-top:44px">${fhead(t('q_labor'),f,4)}<div class="fb"><h2 style="font-size:24px;margin:6px 0 14px;letter-spacing:-.02em">${t('pick_worker')}</h2>
+   <div class="card" style="padding:4px 16px">${WORKERS.map(x=>`<button class="row" style="width:100%;text-align:start" data-a="pickw" data-w="${x.id}"><div class="av">${initial(x.n)}</div><div class="t"><b>${L(x.n)}</b><span>${t(x.tr)}</span></div><span class="mut flip">${I('chev')}</span></button>`).join('')}</div></div></div>`;
+  if(f.step===1)return `<div class="flow" style="padding-top:44px">${fhead(t('q_labor'),f,4)}<div class="fb"><div class="row" style="border:0"><div class="av">${initial(w.n)}</div><div class="t"><b>${L(w.n)}</b><span>${t(w.tr)}</span></div></div>
+   <div class="amount"><div class="mut sm-t">${t('enter_amount')}</div><div class="v"><span class="num">${f.amt||'0'}</span><small>${t('sar')}</small></div></div>
+   <div class="chips" style="justify-content:center">${[200,350,500,800].map(v=>`<button class="chip" data-a="qa" data-v="${v}">${v}</button>`).join('')}</div>
+   <div class="pad">${[1,2,3,4,5,6,7,8,9,'C',0,'⌫'].map(k=>`<button data-a="key" data-k="${k}">${k}</button>`).join('')}</div></div>
+   <div class="ff"><button class="btn p w ${+f.amt>0?'':'dis'}" data-a="fstep">${t('next')}</button></div></div>`;
+  if(f.step===2)return `<div class="flow" style="padding-top:44px">${fhead(t('q_labor'),f,4)}<div class="fb"><h2 style="font-size:24px;margin:6px 0 4px;letter-spacing:-.02em">${t('sign_here')}</h2><p class="mut" style="margin-bottom:14px">${L(w.n)} · <span class="num">${f.amt}</span> ${t('sar')}</p>
+   <div class="sigbox"><canvas id="sig"></canvas><div class="ph" id="sigph">${t('sign_hint')}</div><div class="base"></div></div>
+   <button class="btn o sm" style="margin-top:12px" data-a="sigclr">${t('clear')}</button></div>
+   <div class="ff"><button class="btn p w dis" id="issue" data-a="issue">${t('issue')}</button></div></div>`;
+  return `<div class="flow" style="padding-top:44px"><div class="fb"><div style="text-align:center"><div class="okc" style="margin-top:6px;width:60px;height:60px">${I('check',30)}</div></div>
+   <div class="voucher"><div style="display:flex;justify-content:space-between"><span class="no num">CHA-2611-00${f.no}</span><span style="font-size:11px;opacity:.7" class="num">13 / 11 / 2026</span></div>
+    <div style="margin-top:14px;font-size:12px;opacity:.7">${t('paid_to')}</div><div style="font-size:19px;font-weight:700">${L(w.n)} · ${t(w.tr)}</div>
+    <div style="margin-top:10px;font-size:12px;opacity:.7">${t('amount')}</div><div style="font-size:30px;font-weight:800;letter-spacing:-.02em;color:var(--amber)">${money(f.amt)}</div>
+    <div class="tq">${tafqeet(+f.amt)}</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px"><div style="font-size:12px;opacity:.75;max-width:60%">${t('job')}:<br>${t(w.j)}</div><img src="${f.sig||''}" style="height:46px;filter:invert(1) hue-rotate(180deg)" alt=""></div></div></div>
+   <div class="ff" style="display:flex;gap:10px"><button class="btn s" style="flex:1" data-a="fclose">${t('back_home')}</button><button class="btn p" style="flex:1" data-a="fclose">${I('send',16)} ${t('share')}</button></div></div>`;
+}
+function fVideo(f){
+  if(f.step===0||f.step===1)return `<div class="flow dark" style="padding-top:44px">${fhead(t('q_video'),f)}
+   <div class="cam" style="background:linear-gradient(180deg,#3d5a4c,#1b2a23 60%,#4d4231)"><svg viewBox="0 0 300 400" style="position:absolute;inset:0;width:100%;height:100%;opacity:.9" preserveAspectRatio="xMidYMid slice"><rect y="300" width="300" height="100" fill="#5b4d38"/><rect x="40" y="120" width="220" height="180" fill="#8a8f8c"/><g stroke="#5a5f5c" stroke-width="3"><path d="M40 160h220M40 200h220M40 240h220M100 120v180M170 120v180"/></g><rect x="20" y="90" width="260" height="30" fill="#a6aaa7"/><rect x="215" y="40" width="10" height="260" fill="#E9A23B"/><path d="M220 44l-90 26" stroke="#E9A23B" stroke-width="6"/></svg>
+    ${f.step===1?`<div style="position:absolute;top:16px;inset-inline-start:16px;background:rgba(0,0,0,.55);padding:6px 12px;border-radius:20px;display:flex;gap:8px;align-items:center;font-weight:700"><i class="rec-dot"></i><span class="num" id="vt">0:00</span></div>`:''}
+    <div class="hint">${t('rec_hint')}</div></div>
+   <div style="padding:14px 0 6px;text-align:center;font-size:12px;opacity:.7">${f.step?t('rec_stop'):t('rec_tap')}</div>
+   <div style="padding:0 0 30px"><button class="shutter ${f.step?'rec':''}" data-a="${f.step?'vstop':'vstart'}"><i></i></button></div></div>`;
+  if(f.step===2)return `<div class="flow dark" style="padding-top:44px">${fhead(t('q_video'),f)}<div style="flex:1;display:grid;place-items:center;text-align:center"><div><div class="spin" style="margin:0 auto 14px;width:44px;height:44px"></div><b style="font-size:16px">${t('analyzing')}</b><div style="opacity:.7;font-size:12.5px;margin-top:4px">${t('analyzing_s')}</div></div></div></div>`;
+  return `<div class="flow" style="padding-top:44px">${fhead(t('ai_report'),f)}<div class="fb">
+   <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span class="pill b">${I('spark',12)} Tamam AI</span><span class="mut sm-t num">0:${String(Math.max(8,f.sec)).padStart(2,'0')}</span></div>
+    <p style="margin:12px 0;line-height:1.6;font-weight:500">${t('ai_sum')}</p>
+    <div class="kv"><span>${t('detected')}</span><b>${t('stage_fnd')}</b></div><div class="kv"><span>${t('progress')}</span><b style="color:var(--g7)">+3%</b></div>
+    <div class="kv"><span>${t('materials')}</span><b style="text-align:end;max-width:60%">${t('mat_list')}</b></div>
+    <div class="kv"><span>${t('safety')}</span><b style="color:var(--g7);text-align:end;max-width:60%">${I('check',13)} ${t('all_safe')}</b></div></div></div>
+   <div class="ff"><button class="btn p w" data-a="subVid">${t('post_report')}</button></div></div>`;
+}
+
+/* =============================== OWNER =============================== */
+function ownerUI(){
+  const o=PH.o,n=S.pend.length;
+  const nav=`<nav class="nav">${nb('o','over','home','t_over')}${nb('o','proj','building','t_proj')}${nb('o','appr','check','t_appr',n||'')}${nb('o','money','coin','t_money')}${nb('o','me','user','t_me')}</nav>`;
+  let main=o.tab==='over'?oHome():o.tab==='proj'?(o.proj?oProject(o.proj):oProjects()):o.tab==='appr'?oAppr():o.tab==='money'?oMoney():meScreen('o');
+  return frame('o',`${bannerHTML('o')}<div class="body">${main}</div>${nav}${oSheet()}`);
+}
+function sparkBars(){const m=Math.max(...S.week);return `<div style="display:flex;gap:6px;align-items:flex-end;height:64px;margin-top:14px">${S.week.map((v,i)=>`<div style="flex:1;border-radius:6px;background:${i===6?'var(--amber)':'rgba(255,255,255,.22)'};height:${Math.max(8,v/m*100)}%"></div>`).join('')}</div>`}
+function ring(p,sz,c){const r=sz/2-5,C=2*Math.PI*r;return `<svg width="${sz}" height="${sz}" style="flex:none;transform:rotate(-90deg)"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${c==='w'?'rgba(255,255,255,.2)':'#ECE8DD'}" stroke-width="6"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${c==='w'?'#E9A23B':'var(--g5)'}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-p/100)}"/></svg>`}
+function pendCard(x,compact){
+  const ic=x.ty==='exp'?['coin','a','ty_exp','a']:x.ty==='ms'?['hammer','b','ty_ms','b']:['alert','r','ty_safe','r'];
+  const title=x.raw?L(x.ti):t(x.ti), sub=x.raw?L(x.sub):t(x.sub);
+  const a1=x.ty==='ms'?t('release'):x.ty==='safe'?t('assign'):t('approve'), a2=x.ty==='safe'?t('dismiss'):t('decline');
+  return `<div class="card" style="margin-bottom:10px;padding:14px"><div style="display:flex;gap:12px"><div class="ico ${ic[1]}">${I(ic[0])}</div><div style="flex:1;min-width:0"><span class="pill ${ic[3]}">${t(ic[2])}</span><b style="display:block;margin-top:5px;font-size:14px">${title}</b><span class="mut sm-t">${sub}</span></div>${x.amt?`<div class="amt" style="font-weight:800">${money(x.amt)}</div>`:''}</div>
+   <div style="display:flex;gap:8px;margin-top:12px"><button class="btn p sm" style="flex:1" data-a="resolve" data-id="${x.id}" data-ok="1">${a1}</button><button class="btn o sm" style="flex:1" data-a="resolve" data-id="${x.id}" data-ok="0">${a2}</button></div></div>`;
+}
+function oHome(){
+  const tot=PROJECTS.reduce((a,p)=>a+p.s,0), bud=PROJECTS.reduce((a,p)=>a+p.b,0);
+  return `<div class="h"><div style="display:flex;gap:12px;align-items:center"><div class="av">${initial(t('oName'))}</div><div class="hello"><small>${t('gm')}</small><b>${t('oName')}</b></div></div><button class="ib" data-a="sheet" data-s="ask">${I('spark')}</button></div>
+   <div class="hero"><div class="lbl">${t('owner_sum')}</div><div class="big">${money(tot)}</div>
+    <div class="sub"><span>${t('budget')}: <b>${money(bud)}</b></span><span>${Math.round(tot/bud*100)}%</span></div>${sparkBars()}<div class="lbl" style="margin-top:6px;font-size:11px">${t('last7')}</div></div>
+   <button class="card" style="width:100%;margin-top:12px;display:flex;gap:12px;align-items:center;text-align:start" data-a="sheet" data-s="digest"><div class="ico g">${I('spark',20)}</div><div style="flex:1"><b>${t('digest_t')}</b><div class="mut sm-t">${t('digest_open')}</div></div><span class="mut flip">${I('chev')}</span></button>
+   <div class="sec"><span>${t('needs_you')}</span><a data-a="tab" data-p="o" data-tab="appr">${t('see_all')}</a></div>
+   ${S.pend.slice(0,2).map(x=>pendCard(x)).join('')||`<div class="card emp">${I('check',26)}<div>${t('ap_empty')}</div></div>`}
+   <div class="sec"><span>${t('t_proj')}</span><a data-a="tab" data-p="o" data-tab="proj">${t('see_all')}</a></div>
+   ${PROJECTS.map(projRow).join('')}`;
+}
+function prog(p){return p.id==='nar'?Math.min(100,p.p+S.progressBoost):p.p}
+const projRow=p=>`<button class="card" style="width:100%;margin-bottom:10px;display:flex;gap:14px;align-items:center;text-align:start" data-a="openp" data-id="${p.id}"><div style="position:relative;display:grid;place-items:center">${ring(prog(p),56)}<b style="position:absolute;font-size:13px" class="num">${prog(p)}%</b></div>
+  <div style="flex:1;min-width:0"><b style="font-size:15px">${L(p.n)}</b><div class="mut sm-t">${L(p.c)}</div><div class="bar ${p.pace[0]==='-'?'a':''}" style="margin-top:8px"><i style="width:${p.s/p.b*100}%"></i></div></div>
+  <span class="pill ${p.pace[0]==='-'?'a':'g'} num">${p.pace}</span></button>`;
+function oProjects(){return `<div class="h"><b style="font-size:24px">${t('t_proj')}</b></div>${PROJECTS.map(projRow).join('')}`}
+function oProject(id){
+  const p=PROJECTS.find(x=>x.id===id), pr=prog(p);
+  const st=[['stage_exc','g',t('p_done')],['stage_fnd','a',t('p_active')],['stage_fin','n',t('p_wait')],['stage_gen','n',t('p_wait')]];
+  const ms=[{n:{en:'Al-Amal Electrical',ar:'الأمل للكهرباء'},v:18000,s:S.pend.some(x=>x.id===1)?'a':'g'},{n:{en:'Najd Plumbing',ar:'نجد للسباكة'},v:22000,s:'g'}];
+  return `<div class="h"><button class="ib" data-a="backp"><span class="flip">${I('back')}</span></button><b style="font-size:17px">${L(p.n)}</b><span style="width:40px"></span></div>
+   <div class="hero" style="display:flex;gap:16px;align-items:center"><div style="position:relative;display:grid;place-items:center">${ring(pr,84,'w')}<b style="position:absolute;font-size:20px" class="num">${pr}%</b></div>
+    <div><div class="lbl">${t('p_spent')}</div><div style="font-size:21px;font-weight:800">${money(p.s)}</div><div class="lbl" style="margin-top:6px">${t('p_left')}: ${money(p.b-p.s)}</div></div></div>
+   <div class="sec"><span>${t('p_stages')}</span></div><div class="card" style="padding:6px 16px">${st.map((s,i)=>`<div class="row"><div class="ico ${s[1]==='g'?'g':s[1]==='a'?'a':'b'}" style="${s[1]==='n'?'background:#EFEBE0;color:#9AA39D':''}">${s[1]==='g'?I('check',18):`<b class="num">${i+1}</b>`}</div><div class="t"><b>${t(s[0])}</b></div><span class="pill ${s[1]==='g'?'g':s[1]==='a'?'a':'b'}" style="${s[1]==='n'?'background:#EFEBE0;color:#7a847e':''}">${s[2]}</span></div>`).join('')}</div>
+   <div class="sec"><span>${t('p_ba')}</span></div>
+   <div class="ba" id="ba"><svg viewBox="0 0 300 170" preserveAspectRatio="xMidYMid slice"><rect width="300" height="170" fill="#cfe0e6"/><rect y="130" width="300" height="40" fill="#b8a98a"/><rect x="70" y="50" width="160" height="80" fill="#9aa09d"/><g stroke="#6b716e" stroke-width="3"><path d="M70 50v80M110 50v80M150 50v80M190 50v80M230 50v80M70 90h160"/></g></svg>
+    <svg class="after" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid slice"><rect width="300" height="170" fill="#cfe0e6"/><rect y="130" width="300" height="40" fill="#b8a98a"/><rect x="70" y="40" width="160" height="90" fill="#efe8d8"/><rect x="70" y="34" width="160" height="10" fill="#0E5B47"/><rect x="88" y="62" width="26" height="30" fill="#7fb4c9"/><rect x="128" y="62" width="26" height="30" fill="#7fb4c9"/><rect x="186" y="62" width="26" height="68" fill="#8a5a36"/></svg>
+    <span class="tag" style="inset-inline-start:10px">${t('p_before')}</span><span class="tag" style="inset-inline-end:10px">${t('p_after')}</span><div class="knob"></div><input class="ba-range" type="range" min="5" max="95" value="50" aria-label="slider"></div>
+   <div class="sec"><span>${t('p_map')}</span></div>
+   <div class="card" style="padding:12px"><svg viewBox="0 0 300 130" style="width:100%;border-radius:12px;background:#0c2b22"><g fill="none" stroke="#5fd0a8" stroke-opacity=".7"><rect x="14" y="14" width="272" height="102" stroke-dasharray="5 4"/><rect x="28" y="28" width="70" height="46"/><rect x="115" y="28" width="70" height="46"/><rect x="202" y="28" width="70" height="46" stroke="#E9A23B"/><rect x="60" y="86" width="130" height="22" rx="8"/></g>
+    <g><circle cx="63" cy="51" r="8" fill="#1C8A6B"/><circle cx="150" cy="51" r="8" fill="#E9A23B"/><circle cx="237" cy="51" r="8" fill="#D2453F"/></g><g fill="#fff" font-size="9" font-weight="700" text-anchor="middle"><text x="63" y="54">1</text><text x="150" y="54">2</text><text x="237" y="54">3</text></g></svg></div>
+   <div class="sec"><span>${t('p_videos')}</span></div><div class="card" style="padding:0 16px">${S.feed.map(v=>`<div class="vcard"><div class="vth">${I('video',22)}<em class="num">${v.dur}</em></div><div style="flex:1"><b style="font-size:14px">${t(v.ti)}</b><div class="mut sm-t" style="margin:2px 0 6px">${v.tm==='yday'?t('yday'):t('hours_ago',{h:v.tm.h})}</div><span class="pill b">${I('spark',11)} ${stageName(v.st)}</span></div></div>`).join('')}</div>
+   <div class="sec"><span>${t('p_ms')}</span></div><div class="card" style="padding:4px 16px">${ms.map(m=>`<div class="row"><div class="ico b">${I('hammer',18)}</div><div class="t"><b>${L(m.n)}</b></div><div class="amt">${money(m.v)}<small>${m.s==='g'?t('st_ok'):t('st_pend')}</small></div></div>`).join('')}</div>`;
+}
+function oAppr(){return `<div class="h"><b style="font-size:24px">${t('t_appr')}</b></div>${S.pend.map(x=>pendCard(x)).join('')||`<div class="emp" style="padding:60px 10px"><div class="okc">${I('check',36)}</div><b style="color:var(--ink);font-size:16px">${t('ap_empty')}</b><div style="margin-top:6px">${t('ap_empty_s')}</div></div>`}`}
+function oMoney(){
+  const m=PH.o.mtab;
+  const tabs=`<div class="tabs">${['cash','card','ledger'].map(k=>`<button class="${m===k?'on':''}" data-a="mtab" data-k="${k}">${t({cash:'mc',card:'mcard',ledger:'mledger'}[k])}</button>`).join('')}</div>`;
+  let b='';
+  if(m==='cash'){const tot=S.engineers.reduce((a,e)=>a+e.bal,0);
+    b=`<div class="hero"><div class="lbl">${t('engineers')}</div><div class="big">${money(tot)}</div></div><div class="card" style="margin-top:12px;padding:4px 16px">${S.engineers.map(e=>`<div class="row"><div class="av">${initial(e.n)}</div><div class="t"><b>${L(e.n)}</b><span>${money(e.bal)}</span></div><button class="btn s sm" data-a="sheet" data-s="topup" data-e="${e.id}">${t('topup')}</button></div>`).join('')}</div>`;}
+  else if(m==='card'){b=`<div class="card3d ${S.card.frozen?'frozen':''}"><div style="display:flex;justify-content:space-between;font-weight:700"><span>Tamam · ${t('card_t')}</span><span style="color:var(--amber)">mada</span></div><div class="chipx"></div><div class="pan">•••• •••• •••• 4821</div><div style="display:flex;justify-content:space-between;margin-top:10px;font-size:12px;opacity:.8"><span>${t('wName')} · Al Narjis</span><span class="num">09/28</span></div></div>
+    <div class="card" style="margin-top:14px;padding:4px 16px"><div class="row"><div class="ico b">${I('lock',18)}</div><div class="t"><b>${t('freeze')}</b></div><button class="sw ${S.card.frozen?'on':''}" data-a="freeze" aria-label="freeze"></button></div>
+     <div class="row"><div class="ico a">${I('coin',18)}</div><div class="t"><b>${t('limit')}</b></div><b>${money(2000)}</b></div>
+     <div class="row"><div class="ico g">${I('check',18)}</div><div class="t"><b style="white-space:normal">${t('matched')}</b><span>Madina Hardware · <span class="num">320</span></span></div></div></div>`;}
+  else{const v=S.ledger.reduce((a,x)=>a+x.v,0);
+    b=`<div class="card" style="display:flex;align-items:center;gap:12px"><div class="ico g">${I('shield',20)}</div><div style="flex:1"><div class="mut sm-t">${t('vat_in')}</div><b style="font-size:20px">${money(v)}</b></div><button class="btn s sm" data-a="export">${I('download',15)}</button></div>
+    <div class="sec"><span>${t('ledger_t')}</span></div><div class="card" style="padding:4px 16px">${S.ledger.map(x=>`<div class="row"><div class="ico ${x.z?'g':'a'}">${I(x.z?'shield':'users',18)}</div><div class="t"><b>${L(x.m)}</b><span>${x.z?t('zatca_ok'):t('p_cash')}</span></div><div class="amt">${money(x.a)}${x.v?`<small>${t('vat')} <span class="num">${fmt(x.v)}</span></small>`:''}</div></div>`).join('')}</div>`;}
+  return `<div class="h"><b style="font-size:24px">${t('t_money')}</b></div>${tabs}${b}`;
+}
+function oSheet(){
+  const o=PH.o; if(!o.sheet)return '';
+  let c='';
+  if(o.sheet==='topup'){const e=S.engineers.find(x=>x.id===o.e);c=`<h3>${t('topup_t')}</h3><div class="row" style="border:0"><div class="av">${initial(e.n)}</div><div class="t"><b>${L(e.n)}</b><span>${t('to')}</span></div></div><div class="chips" style="margin:8px 0 18px">${[2000,5000,10000].map(v=>`<button class="chip ${o.amt===v?'on':''}" data-a="topamt" data-v="${v}">${fmt(v)}</button>`).join('')}</div><button class="btn p w ${o.amt?'':'dis'}" data-a="dotop">${t('confirm_topup')}</button>`}
+  if(o.sheet==='digest'){const tot=S.spentToday+0;c=`<h3>${t('digest_t')}</h3><div class="card" style="line-height:1.9">${t('dg1',{s:fmt(14990+S.spentToday-1200)})}<br>${t('dg2',{p:4+S.progressBoost})}<br>${t('dg3',{n:S.pend.length})}</div><button class="btn p w" style="margin-top:14px" data-a="pdf">${I('file',17)} ${t('pdf')}</button>`}
+  if(o.sheet==='ask'){c=`<h3>${t('ask')}</h3><div class="chips">${[1,2,3].map(i=>`<button class="chip ${o.ask===i?'on':''}" data-a="askq" data-i="${i}">${t('qa'+i)}</button>`).join('')}</div>${o.ask?`<div class="ans">${t('an'+o.ask,{c:fmt(S.engineers.reduce((a,e)=>a+e.bal,0))})}</div>`:`<div class="mut sm-t" style="margin-top:12px">${t('ask_ph')}</div>`}`}
+  return `<div class="scrim" data-a="sclose"></div><div class="sheet"><div class="grab"></div>${c}</div>`;
+}
+
+/* =============================== settings =============================== */
+function meScreen(p){
+  const own=p==='o';
+  return `<div class="h"><b style="font-size:24px">${t('settings')}</b></div>
+   <div class="card" style="display:flex;gap:14px;align-items:center"><div class="av" style="width:56px;height:56px;font-size:22px">${initial(t(own?'oName':'wName'))}</div><div><b style="font-size:17px">${t(own?'oName':'wName')}</b><div class="mut sm-t">${t(own?'role_o':'role_w')} · ${L(PROJECTS[0].n)}</div></div></div>
+   <div class="sec"><span>${t('language')}</span></div>
+   <div class="card" style="display:flex;align-items:center;gap:12px"><div class="ico g">${I('globe')}</div><div style="flex:1"><b>${t('language')}</b></div>
+    <div class="seg" style="background:#ECE8DD"><button class="${lang==='en'?'on':''}" data-a="lang" data-l="en">${D.en.lang_en}</button><button class="${lang==='ar'?'on':''}" data-a="lang" data-l="ar">${D.ar.lang_ar}</button></div></div>
+   <div class="card" style="margin-top:12px;padding:4px 16px">
+    <div class="row"><div class="ico b">${I('bell',18)}</div><div class="t"><b>${t('notif')}</b></div><button class="sw on" data-a="noop"></button></div>
+    <div class="row"><div class="ico a">${I('wifi',18)}</div><div class="t"><b>${t('offline')}</b><span style="white-space:normal">${t('offline_s')}</span></div><button class="sw ${S.offline?'on':''}" data-a="offline"></button></div>
+    <div class="row"><div class="ico g">${I('help',18)}</div><div class="t"><b>${t('help')}</b></div><span class="mut flip">${I('chev')}</span></div></div>
+   <button class="btn d w" style="margin-top:16px">${I('logout',17)} ${t('logout')}</button>
+   <div class="mut sm-t" style="text-align:center;margin-top:18px">${t('version')}</div>`;
+}
+
+/* =============================== actions =============================== */
+const nowT=()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+let vTimer=null,rTimer=null;
+const A={
+ tab(p,d){PH[p].tab=d.tab;PH[p].resetScroll=true;if(p==='o')PH.o.proj=null;render(p)},
+ noop(){},
+ wsheet(){PH.w.sheet='add';render('w')}, wclose(){PH.w.sheet=null;render('w')},
+ wflow(p,d){PH.w.sheet=null;const f={type:d.f,step:0,stage:'fnd',pay:'cash',amt:'',sec:0,dark:d.f!=='labor'};
+   if(d.f==='receipt'){f.idx=S.rcIdx%RECEIPTS.length;f.stage=RECEIPTS[f.idx].stage;f.pay=RECEIPTS[f.idx].total>500?'card':'cash'}
+   PH.w.flow=f;render('w')},
+ fclose(){clearInterval(vTimer);clearTimeout(rTimer);PH.w.flow=null;render('w')},
+ fset(p,d){PH.w.flow[d.k]=d.v;render('w')},
+ shoot(){const f=PH.w.flow;f.step=1;f.dark=true;render('w');rTimer=setTimeout(()=>{f.step=2;f.dark=false;render('w')},1500)},
+ subRcpt(){const f=PH.w.flow,r=RECEIPTS[f.idx];f.no='0'+(S.vno++);f.step=3;S.rcIdx++;const over=r.total>500;
+   S.acts.unshift({k:'receipt',ti:r.m,amt:r.total,st:over?'pend':'ok',tm:nowT()});
+   if(!over&&f.pay==='cash'){S.wallet-=r.total;S.engineers[0].bal-=r.total}S.spentToday+=over?0:r.total;
+   toOwner(over?{ty:'exp',raw:1,ti:r.m,sub:{en:`Khaled · ${stageName(f.stage)}`,ar:`خالد · ${stageName(f.stage)}`},amt:r.total}:null,{en:r.m.en,ar:r.m.ar},r.total);render('w')},
+ pickw(p,d){const f=PH.w.flow;f.worker=d.w;f.amt=String(WORKERS.find(x=>x.id===d.w).amt);f.step=1;render('w')},
+ key(p,d){const f=PH.w.flow;let a=f.amt||'';if(d.k==='C')a='';else if(d.k==='⌫')a=a.slice(0,-1);else if(a.length<5)a=(a+d.k).replace(/^0+/,'');f.amt=a;render('w')},
+ qa(p,d){PH.w.flow.amt=d.v;render('w')},
+ fstep(){PH.w.flow.step++;render('w')},
+ sigclr(){const c=document.getElementById('sig');if(c){c.getContext('2d').clearRect(0,0,c.width,c.height);SIG.did=false;document.getElementById('sigph').style.display='';document.getElementById('issue').classList.add('dis')}},
+ issue(){const f=PH.w.flow,c=document.getElementById('sig');f.sig=c.toDataURL();f.no='0'+(S.vno++);f.step=3;const w=WORKERS.find(x=>x.id===f.worker),amt=+f.amt;
+   S.acts.unshift({k:'labor',ti:{en:`${w.n.en} · ${D.en[w.tr]}`,ar:`${w.n.ar} · ${D.ar[w.tr]}`},amt,st:'ok',tm:nowT()});S.wallet-=amt;S.engineers[0].bal-=amt;S.spentToday+=amt;
+   S.ledger.unshift({m:{en:'Cash labor voucher',ar:'سند عمالة نقدي'},a:amt,v:0,z:0});toOwner(null,{en:`Cash voucher · ${w.n.en}`,ar:`سند نقدي · ${w.n.ar}`},amt);render('w')},
+ vstart(){const f=PH.w.flow;f.step=1;f.sec=0;render('w');vTimer=setInterval(()=>{f.sec++;const e=document.getElementById('vt');if(e)e.textContent='0:'+String(f.sec).padStart(2,'0')},1000)},
+ vstop(){clearInterval(vTimer);const f=PH.w.flow;f.step=2;render('w');rTimer=setTimeout(()=>{f.step=3;f.dark=false;render('w')},1700)},
+ subVid(){S.acts.unshift({k:'video',ti:{en:'Villa 3 roof slab',ar:'سقف الفيلا 3'},amt:0,st:'done',tm:nowT()});S.feed.unshift({ti:'v_title1',tm:{h:0},dur:'0:'+String(Math.max(8,PH.w.flow.sec)).padStart(2,'0'),st:'fnd'});S.progressBoost+=3;
+   toOwner(null,{en:'Site video · Villa 3',ar:'فيديو الموقع · فيلا 3'},0,true);A.fclose()},
+ reqtop(){banner('w','send',t('sent'),'')},
+ // owner
+ openp(p,d){PH.o.proj=d.id;PH.o.tab='proj';PH.o.resetScroll=true;render('o')}, backp(){PH.o.proj=null;render('o')},
+ resolve(p,d){const i=S.pend.findIndex(x=>x.id==d.id);if(i<0)return;const x=S.pend[i];S.pend.splice(i,1);
+   if(d.ok==='1'&&x.ty==='exp'){S.spentToday+=x.amt}
+   PH.w&&document.getElementById('pw')&&0;
+   if(x.raw&&d.ok==='1'){const a=S.acts.find(y=>y.st==='pend');if(a){a.st='ok'}}
+   banner('o','check',t(d.ok==='1'?'st_ok':'dismiss'),'');renderIf('w')},
+ sheet(p,d){PH.o.sheet=d.s;PH.o.e=d.e;PH.o.amt=null;PH.o.ask=null;render('o')}, sclose(){PH.o.sheet=null;render('o')},
+ topamt(p,d){PH.o.amt=+d.v;render('o')},
+ dotop(){const e=S.engineers.find(x=>x.id===PH.o.e);e.bal+=PH.o.amt;if(e.id==='k')S.wallet+=PH.o.amt;PH.o.sheet=null;banner('o','check',t('topped'),`${L(e.n)} · +${fmt(PH.o.amt)}`);renderIf('w')},
+ askq(p,d){PH.o.ask=+d.i;render('o')},
+ mtab(p,d){PH.o.mtab=d.k;render('o')}, freeze(){S.card.frozen=!S.card.frozen;render('o')},
+ export(){banner('o','download',t('exported'),'tamam-ledger-nov-2026.xlsx')}, pdf(){PH.o.sheet=null;banner('o','file',t('pdf'),'tamam-digest.pdf')},
+ lang(p,d){lang=d.l;document.documentElement.lang=lang;renderAll()},
+ offline(){S.offline=!S.offline;banner('w',S.offline?'wifi':'check',t(S.offline?'off_banner':'synced'),'');render('o')}
+};
+const renderIf=p=>{if(document.getElementById(p==='w'?'pw':'po'))render(p)};
+function toOwner(pending,title,amt,video){
+  if(pending){pending.id=Date.now();S.pend.unshift(pending)}
+  if(document.getElementById('po')){banner('o',video?'video':'bell',t('new_item'),`${L(title)}${amt?' · '+fmt(amt)+' '+t('sar'):''}`)}
+}
+
+/* =============================== events =============================== */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-a]');if(!el)return;
+  const ph=el.closest('.phone');const p=ph?ph.dataset.p:null;
+  if(A[el.dataset.a]){A[el.dataset.a](p,el.dataset,el)}
+});
+document.addEventListener('input',e=>{if(e.target.matches('.ba-range'))e.target.closest('.ba').style.setProperty('--p',e.target.value+'%')});
+document.getElementById('views').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;VIEW=b.dataset.v;renderAll()});
+
+/* signature pad */
+const SIG={did:false};
+function afterRender(p,host){
+  const c=host.querySelector('#sig');if(!c)return;
+  const r=c.getBoundingClientRect();c.width=r.width*2;c.height=r.height*2;const x=c.getContext('2d');x.scale(2,2);x.lineWidth=2.4;x.lineCap='round';x.lineJoin='round';x.strokeStyle='#0F2219';
+  let down=false;SIG.did=false;
+  const pos=ev=>{const b=c.getBoundingClientRect();return[ev.clientX-b.left,ev.clientY-b.top]};
+  c.addEventListener('pointerdown',ev=>{down=true;c.setPointerCapture(ev.pointerId);x.beginPath();x.moveTo(...pos(ev));if(!SIG.did){SIG.did=true;host.querySelector('#sigph').style.display='none';host.querySelector('#issue').classList.remove('dis')}});
+  c.addEventListener('pointermove',ev=>{if(!down)return;x.lineTo(...pos(ev));x.stroke()});
+  c.addEventListener('pointerup',()=>down=false);
+}
+renderAll();
+</script>
+</body>
+</html>
